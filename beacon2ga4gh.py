@@ -68,9 +68,6 @@ def findAlleleMatch(allele, foundVariant, pos):
     :param pos: the actual location to search (may force an indexing into the actual
             variant string for the comparison
     :return: nothing, but does modify the global alleleFound
-
-    notes: see https://github.com/maximilianh/ucscBeacon/blob/master/query line 376, readAllelesVcf(ifh)
-
     """
     alleleFound = False
     # the variant may start before the address we are searching so figure out
@@ -143,8 +140,10 @@ def search_in_variantset(cl, beaconAlleleRequest, beaconAlleleResponse, variantS
                 'note': '',
                 'info': ''
             }
-            if len(foundVariant.names) > 0:
+            if len(foundVariant.names) > 1:
                 datasetAlleleResponse['info'] = "variantID: " + foundVariant.names[whichAlt]
+            elif len(foundVariant.names) == 1:
+                datasetAlleleResponse['info'] = "variantID: " + foundVariant.names[0]
             beaconAlleleResponse['datasetAlleleResponses'].append(datasetAlleleResponse)
 
             logging.debug('Running the multi-reply code, count={}'.format(count))
@@ -153,7 +152,8 @@ def search_in_variantset(cl, beaconAlleleRequest, beaconAlleleResponse, variantS
             for call in foundVariant.calls:
                 if call.genotype[0]==(whichAlt+1) or call.genotype[1]==(whichAlt+1): #0 entry is for the reference
                     logging.debug('Count:{} alt:{} call:{}'.format(count, whichAlt, call))
-                    beaconAlleleResponse['datasetAlleleResponses'][count]['note'] += ' ' + call.callSetName
+                    # Uncomment the following line if you would like the sample IDs in the "notes" field
+                    # beaconAlleleResponse['datasetAlleleResponses'][count]['note'] += ' ' + call.callSetName
                     beaconAlleleResponse['datasetAlleleResponses'][count]['variantCount'] += 1
             count += 1
     return count
@@ -198,11 +198,21 @@ def fill_beacon(cl, beacon):
     beacon['id'] = dataset.name
     beacon['name'] = dataset.name
     beacon['description'] = dataset.description
+    beacon['version'] = u'0.1'
+    beacon['welcomeUrl'] = u'http://1kgenomes.ga4gh.org'
+    beacon['BeaconOrganization'][0]['id'] = u'Sanger'
+    beacon['BeaconOrganization'][0]['Name'] = u'Sanger Institute'
+    beacon['BeaconOrganization'][0]['welcomeUrl'] = u'http://1kgenomes.ga4gh.org'
 
     beacon['createDateTime'] = date(2015, 10, 1).isoformat()
     beacon['updateDateTime'] = date(2015, 10, 1).isoformat()
     beacon['datasets'][0]['createDateTime'] = date(2015, 10, 1).isoformat()
     beacon['datasets'][0]['updateDateTime'] = date(2015, 10, 1).isoformat()
+    beacon['datasets'][0]['id'] = dataset.name
+    beacon['datasets'][0]['name'] = dataset.name
+    beacon['datasets'][0]['description'] = dataset.description
+    beacon['datasets'][0]['version'] = u'0.1'
+    beacon['datasets'][0]['assemblyId'] = u'NCBI37'
     # TODO need to fill in the ref sets in the beacon data struct
     # Check the reference set match, do we need to search for it?
     referenceSet = cl.searchReferenceSets().next()

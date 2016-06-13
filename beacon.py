@@ -61,13 +61,13 @@ BeaconAlleleRequest = {
 }
 
 BeaconDataset = {
-    'id': u'1kgenomes',
-    'name': u'1000Genomes',
-    'description': u'Variants from the 1000 Genomes project and GENCODE genes annotations',
-    'assemblyId': u'NCBI37',
+    'id': u'',
+    'name': u'',
+    'description': u'',
+    'assemblyId': u'',
     'createDateTime': u'',
     'updateDateTime': u'',
-    'version':u'0.1',   #version of the beacon
+    'version':u'',   #version of the beacon
     'variantCount': -1,
     'callCount': -1,
     'sampleCount': -1,
@@ -76,12 +76,12 @@ BeaconDataset = {
 }
 
 BeaconOrganization = {
-    'id': u'Sanger',
-    'name': u'Sanger Institute',
+    'id': u'',
+    'name': u'',
     'apiVersion': u'0.3',
     'description': u'',
     'address': u'',
-    'welcomeUrl': u'http://www.1000genomes.org',
+    'welcomeUrl': u'',
     'contactUrl': u'',
     'logoUrl': u'',
     'info': u''
@@ -89,15 +89,15 @@ BeaconOrganization = {
 
 # required field(s): id, name, organization, api
 Beacon = {
-    'id': u'1000Genomes',
-    'name': u'1000Genomes',
+    'id': u'',
+    'name': u'',
     'apiVersion': u'0.3',
     'BeaconOrganization': [
         BeaconOrganization
         ],
-    'description': u'Variants from the 1000 Genomes project and GENCODE genes annotations',
-    'version':u'0.1',   #version of the beacon
-    'welconeUrl': u'http://1kgenomes.ga4gh.org',
+    'description': u'',
+    'version':u'',   #version of the beacon
+    'welconeUrl': u'',
     'alternativeUrl': u'',
     'createDateTime': u'',
     'updateDateTime': u'',
