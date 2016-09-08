@@ -47,11 +47,11 @@ def check_reference_set(cl, requestedReferenceSet):
     :param requestedReferenceSet: The reference set to look for
     :return: boolean of if the reference set was found
     """
-    dataset = cl.searchDatasets().next()
+    dataset = cl.search_datasets().next()
     logging.debug(dataset)
 
     # Check the reference set match, do we need to search for it?
-    referenceSet = cl.searchReferenceSets().next()
+    referenceSet = cl.search_reference_sets().next()
     logging.debug(referenceSet)
     if referenceSet.name != requestedReferenceSet:
         logging.warning("returning False for ref set, {} != {}".format(referenceSet['name'], requestedReferenceSet))
@@ -74,7 +74,7 @@ def findAlleleMatch(allele, foundVariant, pos):
     # where in the string to look
     offset = pos - foundVariant.start
     whichAlt = 0
-    for alt in foundVariant.alternateBases:
+    for alt in foundVariant.alternate_bases:
         logging.debug("looking for {} in alt string {} at string offset {}".format(allele, alt, offset))
         if alt.startswith("<"):
             continue
@@ -116,11 +116,11 @@ def search_in_variantset(cl, beaconAlleleRequest, beaconAlleleResponse, variantS
     # OK, now search from pos-1 to pos on chrom
     logging.debug("VariantSet.id is {}".format(variantSet.id))
     logging.debug("ReverenceName is {}".format(chrom))
-    for foundVariant in cl.searchVariants(variantSet.id, start=pos-1, end=pos, referenceName=chrom):
+    for foundVariant in cl.search_variants(variantSet.id, start=pos, end=pos+1, reference_name=chrom):
         logging.debug("Variant names: {}".format(foundVariant.names))
         logging.debug("Start: {}, End: {}".format(foundVariant.start, foundVariant.end))
-        logging.debug("Reference bases: {}".format(foundVariant.referenceBases))
-        logging.debug("Alternate bases: {}".format(foundVariant.alternateBases))
+        logging.debug("Reference bases: {}".format(foundVariant.reference_bases))
+        logging.debug("Alternate bases: {}".format(foundVariant.alternate_bases))
         alleleFound, whichAlt = findAlleleMatch(allele, foundVariant, pos)
         beaconAlleleResponse['exists'] = alleleFound
         # OK, we found one so check to see if we need to search any more
@@ -174,9 +174,9 @@ def search_variants(cl, BeaconAlleleRequest, BeaconAlleleResponse):
     # This function searches all variant sets on this server.
     count = 0 # index into the optional array of return structures
     # which data set am I supposed to search? should this be passed in to this function?
-    dataset = cl.searchDatasets().next()
+    dataset = cl.search_datasets().next()
     logging.debug("dataset %s", dataset)
-    for variantSet in cl.searchVariantSets(datasetId=dataset.id):
+    for variantSet in cl.search_variant_sets(dataset_id=dataset.id):
         logging.debug("---> looping on variant sets, current Name={}".format(variantSet.name))
         count = search_in_variantset(cl, BeaconAlleleRequest, BeaconAlleleResponse, variantSet, count)
 
@@ -193,16 +193,16 @@ def fill_beacon(cl, beacon):
 
     # TODO we should iterate here and fill in all the beacon info about each of the datasets that this server has
     #       Assuming just one dataset for now
-    dataset = cl.searchDatasets().next()
+    dataset = cl.search_datasets().next()
     logging.debug(dataset)
     beacon['id'] = dataset.name
     beacon['name'] = dataset.name
     beacon['description'] = dataset.description
     beacon['version'] = u'0.1'
-    beacon['welcomeUrl'] = u'http://1kgenomes.ga4gh.org'
-    beacon['BeaconOrganization'][0]['id'] = u'Sanger'
-    beacon['BeaconOrganization'][0]['Name'] = u'Sanger Institute'
-    beacon['BeaconOrganization'][0]['welcomeUrl'] = u'http://1kgenomes.ga4gh.org'
+    beacon['welcomeUrl'] = u'http://australiangenomics.org.au'
+    beacon['BeaconOrganization'][0]['id'] = u'AGHA'
+    beacon['BeaconOrganization'][0]['Name'] = u'Australian Genomics Health Alliance'
+    beacon['BeaconOrganization'][0]['welcomeUrl'] = u'http://australiangenomics.org.au'
 
     beacon['createDateTime'] = date(2015, 10, 1).isoformat()
     beacon['updateDateTime'] = date(2015, 10, 1).isoformat()
@@ -215,6 +215,6 @@ def fill_beacon(cl, beacon):
     beacon['datasets'][0]['assemblyId'] = u'NCBI37'
     # TODO need to fill in the ref sets in the beacon data struct
     # Check the reference set match, do we need to search for it?
-    referenceSet = cl.searchReferenceSets().next()
+    referenceSet = cl.search_reference_sets().next()
     logging.debug(referenceSet)
 
