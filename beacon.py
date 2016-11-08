@@ -42,23 +42,15 @@ cl=""
 # required field(s): allele, chromosome, position, reference
 QueryResource = {
     "allele": "A",
-    "chromosome": "chr17",
-    "position": 35098007,
-    "reference": "NCBI37",
+    "chromosome": "8",
+    "position": 144621075,
+    "reference": "GRCh37",
     'dataset_id': ""
 }
 
 ################### Beacon details #########################
 
-BeaconAlleleRequest = {
-    'referenceName': u'',
-    'start': u'',
-    'referenceBases': u'',
-    'alternateBases': u'',
-    'assemblyId': '',
-    'datasetIds': [],
-    'includeDatasetResponse': True,
-}
+
 
 BeaconDataset = {
     'id': u'',
@@ -110,31 +102,6 @@ Beacon = {
     'info': u''
 }
 
-BeaconDatasetAlleleResponse = {
-    'datasetId': u'',
-    'exists': u'',
-    'error': u'',
-    'frequency': u'',
-    'variantCount': -1,
-    'callCount': -1,
-    'sampleCount': -1,
-    'note': u'',
-    'externalUrl': u'',
-    'info': u''
-}
-
-BeaconAlleleResponse = {
-    'beaconId': u'',
-    'exists': u'',
-    'error': u'',
-    'alleleRequest': [
-        BeaconAlleleRequest
-    ],
-    'datasetAlleleResponses': [
-        #BeaconDatasetAlleleResponse
-    ]
-}
-
 
 # --------------- Information endpoint (end) ----------------------#
 
@@ -149,6 +116,40 @@ def info():
 def query():
     global cl
 
+    BeaconAlleleRequest = {
+        'referenceName': u'',
+        'start': u'',
+        'referenceBases': u'',
+        'alternateBases': u'',
+        'assemblyId': '',
+        'datasetIds': [],
+        'includeDatasetResponse': False,
+    }
+
+    BeaconDatasetAlleleResponse = {
+        'datasetId': u'',
+        'exists': u'',
+        'error': u'',
+        'frequency': u'',
+        'variantCount': -1,
+        'callCount': -1,
+        'sampleCount': -1,
+        'note': u'',
+        'externalUrl': u'',
+        'info': u''
+    }
+
+    BeaconAlleleResponse = {
+        'beaconId': u'',
+        'exists': False,
+        'error': u'',
+        'alleleRequest': [
+            BeaconAlleleRequest
+        ],
+        'datasetAlleleResponses': [
+            #BeaconDatasetAlleleResponse
+        ]
+    }
 
     ############# ErrorResource for response #################
 
@@ -199,6 +200,16 @@ class IncompleteQuery(Exception):
     status_code = 400
 
     def __init__(self, message, status_code=None, payload=None, ErrorResource=None, query=None, beacon_id=None):
+        BeaconAlleleRequest = {
+            'referenceName': u'',
+            'start': u'',
+            'referenceBases': u'',
+            'alternateBases': u'',
+            'assemblyId': '',
+            'datasetIds': [],
+            'includeDatasetResponse': False,
+        }
+
         Exception.__init__(self)
         self.message = message
         if status_code is not None:
@@ -209,6 +220,16 @@ class IncompleteQuery(Exception):
         self.beacon_id = Beacon['id']
 
     def to_dict(self):
+        BeaconAlleleRequest = {
+            'referenceName': u'',
+            'start': u'',
+            'referenceBases': u'',
+            'alternateBases': u'',
+            'assemblyId': '',
+            'datasetIds': [],
+            'includeDatasetResponse': False,
+        }
+
         rv = dict(self.payload or ())
         rv["beacon"] = Beacon
         rv["query"] = BeaconAlleleRequest
@@ -218,8 +239,8 @@ class IncompleteQuery(Exception):
 # info function
 @app.route('/beacon/', methods=['GET'])
 def welcome():
-    welcome_message = "Welcome to the Beacon service for the 1000 Genomes GA4GH server. Here is a sample query that can be made against this server (schema version 0.3)."
-    url="http://127.0.0.1:5000/beacon/query?referenceName=chr17&start=35098007&alternateBases=A&assemblyId=NCBI37"
+    welcome_message = "Welcome to the Beacon service for the Australian Genomics Health Alliance - Somatic GA4GH server. Here is a sample query that can be made against this server (schema version 0.3)."
+    url="http://130.56.244.144:5001/beacon/query?referenceName=8&start=144621075&alternateBases=T&assemblyId=GRCh37"
     return jsonify({"Greeting": welcome_message, "QueryResource": QueryResource, "URL": url})
 
 
@@ -242,8 +263,7 @@ def main():
     logging.debug('Beacon starting')
     cl = setup_ga4gh_client()
     fill_beacon(cl, Beacon)
-    app.run()
-
+    app.run(host='10.0.0.3', port=5001)
 
 if __name__ == '__main__':
     main()
