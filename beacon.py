@@ -263,7 +263,7 @@ def main():
     logging.debug('Beacon starting')
     cl = setup_ga4gh_client()
     fill_beacon(cl, Beacon)
-    app.run(host='10.0.0.3', port=5001)
+    app.run()
 
 if __name__ == '__main__':
     main()
